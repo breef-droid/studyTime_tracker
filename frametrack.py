@@ -1,5 +1,20 @@
 from tkinter import *
 from tkinter import ttk
+import sqlite3
+
+c = sqlite3.connect('time_track.db')
+cursor = c.cursor()
+
+'''
+# Database init and table creation
+cursor.execute("""CREATE TABLE time_track(
+    subject text,
+    date text,
+    time_spent integer,
+    week integer
+    )
+    """)
+'''
 
 def frame_track(root):
     #Track frame
@@ -8,3 +23,5 @@ def frame_track(root):
     #Placeholder buttons
     my_button = Button(frame_track, text= "PlaceHolder")
     my_button.grid(row= 0, column= 0)
+
+   
