@@ -1,2 +1,11 @@
 #DB State
 time_track.db
+
+#Asset folder
+assets/
+
+#test files
+timetest.py
+
+#cache
+_pycache_
