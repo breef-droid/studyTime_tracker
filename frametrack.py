@@ -11,46 +11,49 @@ def frame_track(root):
     frame_track = LabelFrame(root, text= "Track current session", padx= 400, pady = 100)
     frame_track.grid(padx= 10, pady= 10, row= 1, column= 0, columnspan= 2, sticky= 'nsew')
     
-    #Drop down button creation
-    subjects = ['PWD (CM2015)', 'CS (CM2025)', 'DNW (CM2040)'] # Subject list:-> TODO: update to global var from update frame module
-    clicked = StringVar(root) #init a String object in tkinter
-    clicked.set('Select Subject')
-    drop_down = OptionMenu(root, clicked, *subjects)
-    drop_down.grid(row= 1, column= 0, padx= 20, pady= 30, sticky= 'nw')
+    #Subject input box
+    label_subject = Label(root, text="Subject: ")
+    label_subject.grid(row= 1, column= 0, padx = 20, pady = 35, sticky= 'nw')
+    editor_subject = Entry(root, width= 30)
+    editor_subject.grid(row= 1, column= 0, padx = 70, pady = 35, sticky= 'nw')
 
     img_list = image_list()
 
     #Timer Control buttons - play
     timer_play = Button(root, image = img_list[0], borderwidth= 0, command= lambda : start_timer(label_time))
-    timer_play.grid(row= 1, column= 0, padx= 20, pady= 70, sticky= 'nw')
+    timer_play.grid(row= 1, column= 0, padx= 20, pady= 110, sticky= 'nw')
     
     #Timer Control buttons - reset
     timer_reset = Button(root, image = img_list[1], borderwidth= 0, command= lambda : reset_timer(label_time))
-    timer_reset.grid(row= 1, column= 0, padx= 80, pady= 70, sticky= 'nw')
+    timer_reset.grid(row= 1, column= 0, padx= 80, pady= 110, sticky= 'nw')
     
     #Timer Control buttons - stop
     timer_stop = Button(root, image = img_list[2], borderwidth= 0, command= stop_timer)
-    timer_stop.grid(row= 1, column= 0, padx= 50, pady= 70, sticky= 'nw')
+    timer_stop.grid(row= 1, column= 0, padx= 50, pady= 110, sticky= 'nw')
 
     #Time Label
     label_time = Label(root, text="Click Play to Start", font=("Helvetica", 12), fg= "green", bg= "black")
-    label_time.grid(row= 1, column= 0, padx = 150, pady = 70, sticky= 'nw')
+    label_time.grid(row= 1, column= 0, padx = 150, pady = 110, sticky= 'nw')
 
     #Date Label
     # current date var formatted
     current_date = time.strftime('%Y/%m/%d', time.localtime()) 
     # subject = stringVar created for dropdown menu
     label_date = Label(root, text= current_date, font=("Helvetica", 12), fg= "green", bg= "black")
-    label_date.grid(row= 1, column= 0, padx = 150, pady = 35, sticky= 'nw')
+    label_date.grid(row= 1, column= 0, padx = 0, pady = 35, sticky= 'ne')
+    
+    #Week Label
+    label_week = Label(root, text="Week: ")
+    label_week.grid(row= 1, column= 0, padx = 20, pady = 70, sticky= 'nw')
+    editor_week = Entry(root, width= 10)
+    editor_week.grid(row= 1, column= 0, padx = 70, pady = 70, sticky= 'nw')
     
     # Add to db
     update_db = Button(root, 
                         text="Log session", 
-                        command= lambda : db_functions.add_one(clicked.get(), current_date, counter, 1) #clicked.get() is called when the button is pressed to .get() the data -> you can't assign it to a variable as the variable will hold the initial state of the StringVar and not the updated state
+                        command= lambda : db_functions.add_one(editor_subject.get(), current_date, counter, editor_week.get()) #clicked.get() is called when the button is pressed to .get() the data -> you can't assign it to a variable as the variable will hold the initial state of the StringVar and not the updated state
                         )
-    update_db.grid(row= 1, column= 0, padx = 20, pady = 120, sticky= 'nw')
-        #todo: how to get subject, date, time_spent, week
-
+    update_db.grid(row= 1, column= 0, padx = 20, pady = 150, sticky= 'nw')
 
 def image_list():
     global img_play, img_pause, img_stop
