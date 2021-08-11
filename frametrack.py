@@ -2,20 +2,9 @@ from tkinter import *
 import sqlite3
 import time
 import app_timer
+import db_functions
 
-c = sqlite3.connect('time_track.db')
-cursor = c.cursor()
 
-'''
-# Database init and table creation
-cursor.execute("""CREATE TABLE time_track(
-    subject text,
-    date text,
-    time_spent integer,
-    week integer
-    )
-    """)
-'''
 
 def frame_track(root):
     #Track frame
@@ -24,7 +13,7 @@ def frame_track(root):
     
     #Drop down button creation
     subjects = ['PWD (CM2015)', 'CS (CM2025)', 'DNW (CM2040)'] # Subject list:-> TODO: update to global var from update frame module
-    clicked = StringVar() #init a String object in tkinter
+    clicked = StringVar(root) #init a String object in tkinter
     clicked.set('Select Subject')
     drop_down = OptionMenu(root, clicked, *subjects)
     drop_down.grid(row= 1, column= 0, padx= 20, pady= 30, sticky= 'nw')
@@ -33,19 +22,34 @@ def frame_track(root):
 
     #Timer Control buttons - play
     timer_play = Button(root, image = img_list[0], borderwidth= 0, command= lambda : start_timer(label_time))
-    timer_play.grid(row= 1, column= 0, padx= 20, pady= 60, sticky= 'nw')
+    timer_play.grid(row= 1, column= 0, padx= 20, pady= 70, sticky= 'nw')
     
     #Timer Control buttons - reset
     timer_reset = Button(root, image = img_list[1], borderwidth= 0, command= lambda : reset_timer(label_time))
-    timer_reset.grid(row= 1, column= 0, padx= 80, pady= 60, sticky= 'nw')
+    timer_reset.grid(row= 1, column= 0, padx= 80, pady= 70, sticky= 'nw')
     
     #Timer Control buttons - stop
     timer_stop = Button(root, image = img_list[2], borderwidth= 0, command= stop_timer)
-    timer_stop.grid(row= 1, column= 0, padx= 50, pady= 60, sticky= 'nw')
+    timer_stop.grid(row= 1, column= 0, padx= 50, pady= 70, sticky= 'nw')
 
     #Time Label
     label_time = Label(root, text="Click Play to Start", font=("Helvetica", 12), fg= "green", bg= "black")
-    label_time.grid(row= 1, column= 0, padx = 150, pady = 60, sticky= 'nw')
+    label_time.grid(row= 1, column= 0, padx = 150, pady = 70, sticky= 'nw')
+
+    #Date Label
+    # current date var formatted
+    current_date = time.strftime('%Y/%m/%d', time.localtime()) 
+    # subject = stringVar created for dropdown menu
+    label_date = Label(root, text= current_date, font=("Helvetica", 12), fg= "green", bg= "black")
+    label_date.grid(row= 1, column= 0, padx = 150, pady = 35, sticky= 'nw')
+    
+    # Add to db
+    update_db = Button(root, 
+                        text="Log session", 
+                        command= lambda : db_functions.add_one(clicked.get(), current_date, counter, 1) #clicked.get() is called when the button is pressed to .get() the data -> you can't assign it to a variable as the variable will hold the initial state of the StringVar and not the updated state
+                        )
+    update_db.grid(row= 1, column= 0, padx = 20, pady = 120, sticky= 'nw')
+        #todo: how to get subject, date, time_spent, week
 
 
 def image_list():
@@ -85,7 +89,6 @@ def start_timer(lbl):
     global running
     running = True
     counter_label(lbl)
-
 
 def stop_timer():
     global running
