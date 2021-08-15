@@ -37,16 +37,13 @@ def add_one(subject, date, time_spent, week):
 def delete_one(rowid):
     connect = sqlite3.connect('time_track.db')
     c = connect.cursor()
-    #execute db delete
-    c.execute('DELETE FROM time_track WHERE rowid = (?)', str(rowid))
+    #execute db delete, (rowid,) included because we pass in a sequence to make the parameters a tuple
+    #https://stackoverflow.com/questions/16856647/sqlite3-programmingerror-incorrect-number-of-bindings-supplied-the-current-sta
+    c.execute('DELETE FROM time_track WHERE rowid = (?)', (rowid,))
     connect.commit()
     message = f'Successfully deleted: id:{rowid} from db'
     print(message)
     connect.close()
 
-# add_one('CM2040', '2021/7/14', 2460, 14)
-# delete_one(1)
-
-show_all()
-        
+show_all() 
 
