@@ -1,38 +1,41 @@
 import sqlite3
 import matplotlib.pyplot as plt
 import time
-from matplotlib import style
-style.use('fivethirtyeight')
+import pandas as pd
 
+def db_to_df():
+    # db connection
+    con = sqlite3.connect('time_track.db')
+    c = con.cursor()
 
-def graph_data_weekly():
-    conn = sqlite3.connect('time_track.db')
-    c = conn.cursor()
-
-    #query
-    c.execute('''SELECT week, subject, SUM(time_spent) 
-                FROM time_track
-                GROUP BY week, subject;''')
-    weeks, subjects, total_time = [], [], []
-    #loop through data & append to lists
-    for row in c.fetchall():
-        weeks.append(row[0])
-        subjects.append(row[1])
-        total_time.append(row[2])
+    # Read db & export to csv
+    df_time_track = pd.read_sql_query('SELECT rowid, * from time_track', con)
+    # df_time_track.to_csv('data.csv')
 
     c.close()
-    conn.close()
+    con.close()
+
+    return df_time_track
+
+def df_graphs():
+    # Read csv to df
+    df_time = db_to_df()
+    # Converts df time to minutes
+    df_time['time_spent'] = df_time['time_spent']/60
+
+    # Style graph
+    plt.style.use('seaborn')
+    # Week series
+    df_group_week = df_time.groupby(['week', 'subject'])['time_spent'].sum().fillna(0).unstack()
+    # Weekly plot
+    weekly_graph = df_group_week.plot(kind= 'bar', stacked= True, title= 'Minutes per week', ylabel= 'Minutes', xlabel = 'Weeks')
+    # Day series
+    df_group_daily = df_time.groupby(['date', 'subject'])['time_spent'].sum().fillna(0).unstack()
+    # # Daily plot
+    # daily_graph = df_group_daily.plot(kind= 'bar', stacked= True, title= 'Minutes per day', ylabel= 'Minutes', xlabel = 'Date')
+
+    return weekly_graph
     
-    return [weeks, subjects, total_time]
 
-data = graph_data_weekly()
-
-labels = data[0]
-subjects = data[1]
-total_time = data[2]
-width = 0.35
-fig, ax = plt.subplots()
-
-ax.bar(labels, subjects, width)
 
 

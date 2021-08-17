@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import helpers, frametrack
 
+
 #root init
 root = Tk()
 
@@ -13,5 +14,8 @@ helpers.frame_weekly(root)
 helpers.frame_update(root)
 frametrack.frame_track(root)
 
+# button = Button(root, text="Quit", command= helpers._quit(root))
+# button.grid(sticky= 's')
 # loop init
 root.mainloop()
+

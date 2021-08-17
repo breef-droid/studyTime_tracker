@@ -10,3 +10,6 @@ timetest.py
 #cache
 __pycache__
 *.pyc
+
+*.csv
+*.ipynb

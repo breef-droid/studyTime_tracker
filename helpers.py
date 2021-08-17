@@ -1,9 +1,11 @@
 from tkinter import *
-from tkinter import ttk
+import graphing
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def themes(root):
     #set theme
-    ttk.Style().theme_use('winnative')
+    # ttk.Style().theme_use('winnative')
     root.title('Study Tracker')
     root.geometry("800x900")
     #Grid config rows/columns
@@ -33,9 +35,24 @@ def frame_semmester(root):
     #All time frame
     frame_allTime = LabelFrame(root,text= "Semester to date", padx= 100, pady = 100)
     frame_allTime.grid(padx= 10, pady= 10, row= 0, column= 0)
+    
+    # weekly_graph = graphing.df_graphs()[0]
     #Placeholder buttons
-    my_button = Button(frame_allTime, text= "PlaceHolder")
-    my_button.grid(row= 0, column= 0)
+    # my_button = Button(frame_allTime, text= "Show Graph", command= graphing.df_graphs())
+    # my_button.grid(row= 0, column= 0)
+    figure1 = plt.Figure(figsize=(6,5), dpi= 100)
+    ax1 = figure1.add_subplot(111)
+    weekly_graph = graphing.df_graphs()
+    graph = FigureCanvasTkAgg(weekly_graph, root)
+    graph.get_tk_widget().grid(sticky = 'nesw')
+    canvas = FigureCanvasTkAgg(figure1, root)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row= 0, column= 0, padx = 0, pady = 35, sticky= 'nw')
+
+
+
+
+
 
 def frame_weekly(root):
     # Week to date frame
@@ -51,6 +68,12 @@ def frame_update(root):
     frame_update.grid(padx= 10, pady= 10, row= 2, column= 0, columnspan= 2, sticky= 'nsew')
     my_button = Button(frame_update, text= "PlaceHolder")
     my_button.grid(row= 0, column= 0)
+
+# def _quit(root):
+#     root.destroy() # this is necessary on Windows to prevent
+#                     # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+#     root.quit()     # stops mainloop
+
 
 
 

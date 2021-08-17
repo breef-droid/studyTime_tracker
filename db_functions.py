@@ -45,5 +45,5 @@ def delete_one(rowid):
     print(message)
     connect.close()
 
-show_all() 
+show_all()
 
