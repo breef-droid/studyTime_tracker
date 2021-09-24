@@ -46,4 +46,3 @@ def delete_one(rowid):
     connect.close()
 
 show_all()
-

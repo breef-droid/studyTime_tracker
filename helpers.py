@@ -8,6 +8,7 @@ def themes(root):
     # ttk.Style().theme_use('winnative')
     root.title('Study Tracker')
     root.geometry("800x900")
+    root.config(bg= "#4a7a8c")
     #Grid config rows/columns
     Grid.rowconfigure(root, 0, weight= 1)
     Grid.rowconfigure(root, 1, weight= 1)
@@ -38,18 +39,24 @@ def frame_semmester(root):
     
     # weekly_graph = graphing.df_graphs()[0]
     #Placeholder buttons
-    # my_button = Button(frame_allTime, text= "Show Graph", command= graphing.df_graphs())
-    # my_button.grid(row= 0, column= 0)
-    figure1 = plt.Figure(figsize=(6,5), dpi= 100)
-    ax1 = figure1.add_subplot(111)
-    weekly_graph = graphing.df_graphs()
-    graph = FigureCanvasTkAgg(weekly_graph, root)
-    graph.get_tk_widget().grid(sticky = 'nesw')
-    canvas = FigureCanvasTkAgg(figure1, root)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row= 0, column= 0, padx = 0, pady = 35, sticky= 'nw')
+    my_button = Button(frame_allTime, text= "Show Graph", command= graphing.df_graphs())
+    my_button.pack()
 
 
+#MenuBar
+def menubar(root):
+
+    def _quit(root):
+        root.destroy() # this is necessary on Windows to prevent
+                        # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+        root.quit()     # stops mainloop
+        
+    menubar = Menu()
+    filemenu= Menu(menubar, tearoff= False)
+    menubar.add_cascade(label= "File", menu= filemenu)
+    root.config(root, menu= menubar)
+    filemenu.add_command(label= "Exit", command= lambda: _quit()) #Add exit option
+    
 
 
 
@@ -69,10 +76,6 @@ def frame_update(root):
     my_button = Button(frame_update, text= "PlaceHolder")
     my_button.grid(row= 0, column= 0)
 
-# def _quit(root):
-#     root.destroy() # this is necessary on Windows to prevent
-#                     # Fatal Python Error: PyEval_RestoreThread: NULL tstate
-#     root.quit()     # stops mainloop
 
 
 

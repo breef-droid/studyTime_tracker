@@ -37,7 +37,7 @@ def frame_track(root):
 
     #Date Label
     # current date var formatted
-    current_date = time.strftime('%Y/%m/%d', time.localtime()) 
+    current_date = time.strftime('%Y/%m/%d', time.localtime())
     # subject = stringVar created for dropdown menu
     label_date = Label(root, text= current_date, font=("Helvetica", 12), fg= "green", bg= "black")
     label_date.grid(row= 1, column= 0, padx = 0, pady = 35, sticky= 'ne')
