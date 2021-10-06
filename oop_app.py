@@ -3,7 +3,9 @@ from tkinter import ttk #CSS for tkinter
 import time #time module
 import sqlite3
 import pandas as pd
+from datetime import date
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
         
 
@@ -198,6 +200,8 @@ class Grapher(FrameConstructor):
         plt.rcParams.update(params)
 
         fig = plt.Figure(figsize=(4, 3))
+        fig.autofmt_xdate()
+
         axis_1 = fig.add_subplot(111)
 
         self.canvas = FigureCanvasTkAgg(fig, self.root)
@@ -207,8 +211,7 @@ class Grapher(FrameConstructor):
             axis_1.cla()
 
             graph_data = self.graph_data()
-            
-            
+
             if self.period == 'weekly':
                 graph_data[0].plot(kind= 'bar', 
                                     stacked= True, 
@@ -216,7 +219,7 @@ class Grapher(FrameConstructor):
                                     ylabel= 'Minutes', 
                                     xlabel = 'Weeks', 
                                     ax= axis_1)
-                axis_1.legend(bbox_to_anchor= (1.2, 0.9))
+                axis_1.legend(bbox_to_anchor= (1.1, 0.9))
                 axis_1.axhline(y= 180 * 7, ls= '--')
                 
             
@@ -227,7 +230,7 @@ class Grapher(FrameConstructor):
                                     ylabel= 'Minutes', 
                                     xlabel = 'Date', 
                                     ax= axis_1)
-                axis_1.legend(bbox_to_anchor= (1.2, 0.9))
+                axis_1.legend(bbox_to_anchor= (1.1, 0.9))
                 axis_1.axhline(y= 180, ls= '--')
         
             for tick in axis_1.get_xticklabels():
@@ -247,6 +250,7 @@ class Grapher(FrameConstructor):
     def graph_data():
         con = sqlite3.connect('time_track.db')
         df_time = pd.read_sql_query('SELECT * FROM time_track', con)
+        df_time['date'] = pd.to_datetime(df_time['date'], dayfirst= True).dt.strftime('%d-%m')
         df_time['time_spent'] = df_time['time_spent']/60
         con.close()
 
