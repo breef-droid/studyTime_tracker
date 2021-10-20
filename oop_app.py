@@ -113,7 +113,7 @@ class Logger(FrameConstructor):
         week_editor.place(x= self.width - 80, y = 35)
 
         #Subject Selector
-        SUBJECTS = ['PWD (CM2015)', 'CSec(CM2025)', 'DNW(CM2015)', 'AppDev', 'Coding']
+        SUBJECTS = ['ASP(CM2020)', 'DS(CM3005)', 'AppDev', 'Coding', 'Odin']
         subject_label = tk.Label(self.root, 
                                     text= 'Subject: ',
                                     font= app_font, 
@@ -169,6 +169,7 @@ class Logger(FrameConstructor):
         # blank upload error handling
         if subject and week and (time_spent > 0):
             c.execute('INSERT INTO time_track VALUES (?, ?, ?, ?)', (subject, date, time_spent, week))
+            self.reset_timer()
         else:
             raise RuntimeError('Blank values present')
         
@@ -194,6 +195,8 @@ class Grapher(FrameConstructor):
                     'axes.labelsize' : 6,
                     'legend.framealpha' : 0.2
         }
+
+        color_palette = ['#e63946', '#34a0a4', '#a8dadc','#457b9d','#1d3557']
                 
         plt.style.use('ggplot')
 
@@ -211,31 +214,33 @@ class Grapher(FrameConstructor):
             axis_1.cla()
 
             graph_data = self.graph_data()
-
+           
             if self.period == 'weekly':
                 graph_data[0].plot(kind= 'bar', 
                                     stacked= True, 
                                     title= 'Minutes per week', 
                                     ylabel= 'Minutes', 
-                                    xlabel = 'Weeks', 
+                                    xlabel = 'Weeks',
+                                    color = color_palette,
                                     ax= axis_1)
                 axis_1.legend(bbox_to_anchor= (1.1, 0.9))
                 axis_1.axhline(y= 180 * 7, ls= '--')
-                
             
             elif self.period == 'daily':
+                # jfc this took too long, find the column from groupby convert to strftime then to list
+                xtick_dates = graph_data[1].index.get_level_values('date').strftime('%d-%m').tolist()
                 graph_data[1].plot(kind= 'bar', 
                                     stacked= True, 
                                     title= 'Minutes per day', 
                                     ylabel= 'Minutes', 
-                                    xlabel = 'Date', 
+                                    xlabel = 'Date',
+                                    color = color_palette,
                                     ax= axis_1)
-                axis_1.legend(bbox_to_anchor= (1.1, 0.9))
+                axis_1.legend(bbox_to_anchor= (0.85, 0.83))
                 axis_1.axhline(y= 180, ls= '--')
-        
-            for tick in axis_1.get_xticklabels():
-                tick.set_rotation(0)
-            
+                # pass list as xticklabels
+                axis_1.set_xticklabels(xtick_dates)
+                   
             self.canvas.draw()
 
             self.canvas.get_tk_widget().place(relheight= 1, relwidth= 1)
@@ -250,15 +255,16 @@ class Grapher(FrameConstructor):
     def graph_data():
         con = sqlite3.connect('time_track.db')
         df_time = pd.read_sql_query('SELECT * FROM time_track', con)
-        df_time['date'] = pd.to_datetime(df_time['date'], dayfirst= True).dt.strftime('%d-%m')
+        df_time['date'] = pd.to_datetime(df_time['date'], dayfirst= True)
+        # df_time['date'] = mdates.date2num(df_time['date'])
         df_time['time_spent'] = df_time['time_spent']/60
         con.close()
 
         df_group_week = df_time.groupby(['week', 'subject'])['time_spent'].sum().fillna(0).unstack()
 
-        df_group_day = df_time.groupby(['date', 'subject'])['time_spent'].sum().fillna(0).unstack()
+        df_group_day = df_time.groupby(['date', 'subject'])['time_spent'].sum().fillna(0).unstack().sort_values(by= ['date']).tail(7)
 
-        return [df_group_week, df_group_day.tail(7)]
+        return [df_group_week, df_group_day]
 
 
 
